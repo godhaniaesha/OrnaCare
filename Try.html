@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login with SVG Icon Change</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: flex-end;
+            background-color: #333;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .user-login {
+            margin-right: 15px;
+        }
+        
+        .user-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .user-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-btn svg {
+            fill: white;
+            transition: all 0.3s ease;
+        }
+        
+        .user-btn svg path {
+            transition: all 0.3s ease;
+        }
+        
+        .user-btn:hover svg {
+            transform: scale(1.1);
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .status-message {
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="user-login">
+            <button type="button" class="user-btn" id="userBtn" data-bs-toggle="modal" data-bs-target="#user-login">
+                <!-- Default user login icon -->
+                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" id="userIcon">
+                    <g clip-path="url(#clip0_122_313)">
+                        <path d="M15.364 11.636C14.3837 10.6558 13.217 9.93013 11.9439 9.49085C13.3074 8.55179 14.2031 6.9802 14.2031 5.20312C14.2031 2.33413 11.869 0 9 0C6.131 0 3.79688 2.33413 3.79688 5.20312C3.79688 6.9802 4.69262 8.55179 6.05609 9.49085C4.78308 9.93013 3.61631 10.6558 2.63605 11.636C0.936176 13.3359 0 15.596 0 18H1.40625C1.40625 13.8128 4.81279 10.4062 9 10.4062C13.1872 10.4062 16.5938 13.8128 16.5938 18H18C18 15.596 17.0638 13.3359 15.364 11.636ZM9 9C6.90641 9 5.20312 7.29675 5.20312 5.20312C5.20312 3.1095 6.90641 1.40625 9 1.40625C11.0936 1.40625 12.7969 3.1095 12.7969 5.20312C12.7969 7.29675 11.0936 9 9 9Z" />
+                    </g>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="mb-4 text-center">User Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+    </div>
+
+    <!-- Modal for logout confirmation -->
+    <div class="modal fade" id="logout-confirm" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Logout Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to logout?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmLogout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    
+    <script>
+        // User state
+        let isLoggedIn = false;
+        let logoutModal;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const userBtn = document.getElementById('userBtn');
+            
+            // Initialize modal
+            logoutModal = new bootstrap.Modal(document.getElementById('logout-confirm'));
+            
+            // Handle form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Simple validation - in real app, you'd check against server
+                if (username && password) {
+                    loginSuccess();
+                } else {
+                    showMessage("Please enter both username and password", "error");
+                }
+            });
+            
+            // Handle user button click based on login state
+            userBtn.addEventListener('click', function(e) {
+                if (isLoggedIn) {
+                    // Prevent default behavior and show logout modal
+                    e.preventDefault();
+                    logoutModal.show();
+                }
+                // If not logged in, default behavior (show login modal) occurs
+            });
+            
+            // Handle logout confirmation
+            document.getElementById('confirmLogout').addEventListener('click', function() {
+                logoutSuccess();
+                logoutModal.hide();
+            });
+        });
+        
+        function loginSuccess() {
+            isLoggedIn = true;
+            
+            // Change the SVG icon to logged-in user icon
+            document.getElementById('userIcon').innerHTML = `
+                <circle cx="9" cy="5" r="5" />
+                <path d="M1 18C1 13.5817 4.58172 10 9 10C13.4183 10 17 13.5817 17 18H1Z" />
+            `;
+            
+            // Update button attributes
+            const userBtn = document.getElementById('userBtn');
+            userBtn.setAttribute('data-bs-toggle', 'modal');
+            userBtn.setAttribute('data-bs-target', '#logout-confirm');
+            
+            // Add pulse animation
+            document.getElementById('userIcon').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('userIcon').classList.remove('pulse');
+            }, 500);
+            
+            // Show success message
+            showMessage("Login successful!", "success");
+            
+            // Clear form
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+        
+        function logoutSuccess() {
+            isLoggedIn = false;
+            
+            // Change back to original SVG icon
+            document.getElementById('userIcon').innerHTML = `
+                <g clip-path="url(#clip0_122_313)">
+                    <path d="M15.364 11.636C14.3837 10.6558 13.217 9.93013 11.9439 9.49085C13.3074 8.55179 14.2031 6.9802 14.2031 5.20312C14.2031 2.33413 11.869 0 9 0C6.131 0 3.79688 2.33413 3.79688 5.20312C3.79688 6.9802 4.69262 8.55179 6.05609 9.49085C4.78308 9.93013 3.61631 10.6558 2.63605 11.636C0.936176 13.3359 0 15.596 0 18H1.40625C1.40625 13.8128 4.81279 10.4062 9 10.4062C13.1872 10.4062 16.5938 13.8128 16.5938 18H18C18 15.596 17.0638 13.3359 15.364 11.636ZM9 9C6.90641 9 5.20312 7.29675 5.20312 5.20312C5.20312 3.1095 6.90641 1.40625 9 1.40625C11.0936 1.40625 12.7969 3.1095 12.7969 5.20312C12.7969 7.29675 11.0936 9 9 9Z" />
+                </g>
+            `;
+            
+            // Add pulse animation
+            document.getElementById('userIcon').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('userIcon').classList.remove('pulse');
+            }, 500);
+            
+            // Show success message
+            showMessage("Logout successful!", "success");
+        }
+        
+        function showMessage(message, type) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = message;
+            statusMessage.style.display = 'block';
+            statusMessage.className = `status-message ${type}`;
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
