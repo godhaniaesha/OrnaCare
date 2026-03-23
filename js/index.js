@@ -1,174 +1,144 @@
 // header start
 document.addEventListener("DOMContentLoaded", function () {
-  fetch("http://localhost:3000/category", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok " + response.statusText);
+  const categories = dbData.category;
+  const subcategories = dbData.subcategory;
+  const categoryList = document.getElementById("categoryList");
+
+  // Function to close all mega menus
+  function closeAllMegaMenus() {
+    document.querySelectorAll(".menu-item-has-children").forEach((item) => {
+      item.classList.remove("active");
+      const megaMenu = item.querySelector(".mega-menu2");
+      const icon = item.querySelector(".dropdown-icon");
+      if (megaMenu) {
+        megaMenu.style.display = "none";
       }
-      return response.json();
-    })
-    .then((categories) => {
-      const categoryList = document.getElementById("categoryList");
-
-      // Function to close all mega menus
-      function closeAllMegaMenus() {
-        document.querySelectorAll(".menu-item-has-children").forEach((item) => {
-          item.classList.remove("active");
-          const megaMenu = item.querySelector(".mega-menu2");
-          const icon = item.querySelector(".dropdown-icon");
-          if (megaMenu) {
-            megaMenu.style.display = "none";
-          }
-          if (icon) {
-            icon.classList.remove("bi-dash");
-            icon.classList.add("bi-plus");
-          }
-        });
+      if (icon) {
+        icon.classList.remove("bi-dash");
+        icon.classList.add("bi-plus");
       }
+    });
+  }
 
-      return fetch("http://localhost:3000/subcategory", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(
-              "Network response was not ok " + response.statusText
-            );
-          }
-          return response.json();
-        })
-        .then((subcategories) => {
-          categories.forEach((category) => {
-            const li = document.createElement("li");
-            li.classList.add("menu-item-has-children", "position-inherit");
+  categories.forEach((category) => {
+    const li = document.createElement("li");
+    li.classList.add("menu-item-has-children", "position-inherit");
 
-            const a = document.createElement("a");
-            a.classList.add("drop-down");
-            a.href = `#${category.cat_name}`;
-            a.textContent = category.cat_name;
+    const a = document.createElement("a");
+    a.classList.add("drop-down");
+    a.href = `#${category.cat_name}`;
+    a.textContent = category.cat_name;
 
-            const icon = document.createElement("i");
-            icon.classList.add("bi", "bi-plus", "dropdown-icon");
+    const icon = document.createElement("i");
+    icon.classList.add("bi", "bi-plus", "dropdown-icon");
 
-            a.appendChild(icon);
-            li.appendChild(a);
+    a.appendChild(icon);
+    li.appendChild(a);
 
-            const megaMenuDiv = document.createElement("div");
-            megaMenuDiv.classList.add("mega-menu2");
-            megaMenuDiv.style.backgroundImage = `url('/img/home1/megamenu2-${category.cat_name.toLowerCase()}-bg.png')`;
+    const megaMenuDiv = document.createElement("div");
+    megaMenuDiv.classList.add("mega-menu2");
+    megaMenuDiv.style.backgroundImage = `url('/img/home1/megamenu2-${category.cat_name.toLowerCase()}-bg.png')`;
 
-            const megaMenuWrap = document.createElement("div");
-            megaMenuWrap.classList.add("megamenu-wrap");
+    const megaMenuWrap = document.createElement("div");
+    megaMenuWrap.classList.add("megamenu-wrap");
 
-            const subCategoryList = document.createElement("ul");
-            subCategoryList.classList.add("menu-row");
+    const subCategoryList = document.createElement("ul");
+    subCategoryList.classList.add("menu-row");
 
-            const filteredSubcategories = subcategories.filter(
-              (sub) => sub.cat_id === Number(category.id)
-            );
-
-            filteredSubcategories.forEach((sub) => {
-              const subLi = document.createElement("li");
-              subLi.classList.add("menu-single-item");
-
-              const subA = document.createElement("a");
-              subA.href = "shop-list.html";
-              subA.textContent = sub.sub_name;
-
-              subA.addEventListener("click", function () {
-                localStorage.setItem("selectedSubcategoryId", sub.id);
-                localStorage.setItem("selectedcategoryId", "");
-                localStorage.removeItem("searchResultIds");
-                localStorage.removeItem("searchTerm");
-              });
-
-              subLi.appendChild(subA);
-              subCategoryList.appendChild(subLi);
-            });
-
-            megaMenuWrap.appendChild(subCategoryList);
-            megaMenuDiv.appendChild(megaMenuWrap);
-            li.appendChild(megaMenuDiv);
-            categoryList.appendChild(li);
-
-            li.addEventListener("click", function () {
-              if (megaMenuDiv.style.display === "block") {
-                megaMenuDiv.style.display = "none";
-                icon.classList.remove("bi-plus");
-                icon.classList.add("bi-dash");
-              } else {
-                closeAllMegaMenus();
-                megaMenuDiv.style.display = "block";
-                icon.classList.remove("bi-dash");
-                icon.classList.add("bi-plus");
-              }
-            });
-          });
-
-          // Pages menu
-          const pagesLi = document.createElement("li");
-          pagesLi.classList.add("menu-item-has-children");
-
-          const pagesLink = document.createElement("a");
-          pagesLink.href = "#";
-          pagesLink.classList.add("drop-down");
-          pagesLink.textContent = "Info";
-
-          const pagesIcon = document.createElement("i");
-          pagesIcon.classList.add("bi", "bi-plus", "dropdown-icon");
-
-          const subMenu = document.createElement("ul");
-          subMenu.classList.add("sub-menu");
-
-          const subItems = [
-            { href: "about-us.html", text: "About Us" },
-            { href: "contact.html", text: "Contact Us" },
-            { href: "faq.html", text: "FAQ" },
-          ];
-
-          subItems.forEach((item) => {
-            const subLi = document.createElement("li");
-            const subA = document.createElement("a");
-            subA.href = item.href;
-            subA.textContent = item.text;
-            subLi.appendChild(subA);
-            subMenu.appendChild(subLi);
-          });
-
-          pagesLink.appendChild(pagesIcon);
-          pagesLi.appendChild(pagesLink);
-          pagesLi.appendChild(subMenu);
-          categoryList.appendChild(pagesLi);
-
-          // Hover events for Pages menu
-          pagesLi.addEventListener("mouseenter", function () {
-            closeAllMegaMenus();
-            pagesLi.classList.add("active");
-            subMenu.style.display = "block";
-            pagesIcon.classList.remove("bi-plus");
-            pagesIcon.classList.add("bi-dash");
-          });
-
-          pagesLi.addEventListener("mouseleave", function () {
-            pagesLi.classList.remove("active");
-            subMenu.style.display = "none";
-            pagesIcon.classList.remove("bi-dash");
-            pagesIcon.classList.add("bi-plus");
-          });
-        });
-    })
-    .catch((error) =>
-      console.error("There was a problem with the fetch operation:", error)
+    const filteredSubcategories = subcategories.filter(
+      (sub) => sub.cat_id === Number(category.id)
     );
+
+    filteredSubcategories.forEach((sub) => {
+      const subLi = document.createElement("li");
+      subLi.classList.add("menu-single-item");
+
+      const subA = document.createElement("a");
+      subA.href = "shop-list.html";
+      subA.textContent = sub.sub_name;
+
+      subA.addEventListener("click", function () {
+        localStorage.setItem("selectedSubcategoryId", sub.id);
+        localStorage.setItem("selectedcategoryId", "");
+        localStorage.removeItem("searchResultIds");
+        localStorage.removeItem("searchTerm");
+      });
+
+      subLi.appendChild(subA);
+      subCategoryList.appendChild(subLi);
+    });
+
+    megaMenuWrap.appendChild(subCategoryList);
+    megaMenuDiv.appendChild(megaMenuWrap);
+    li.appendChild(megaMenuDiv);
+    categoryList.appendChild(li);
+
+    li.addEventListener("click", function () {
+      if (megaMenuDiv.style.display === "block") {
+        megaMenuDiv.style.display = "none";
+        icon.classList.remove("bi-plus");
+        icon.classList.add("bi-dash");
+      } else {
+        closeAllMegaMenus();
+        megaMenuDiv.style.display = "block";
+        icon.classList.remove("bi-dash");
+        icon.classList.add("bi-plus");
+      }
+    });
+  });
+
+  // Pages menu
+  const pagesLi = document.createElement("li");
+  pagesLi.classList.add("menu-item-has-children");
+
+  const pagesLink = document.createElement("a");
+  pagesLink.href = "#";
+  pagesLink.classList.add("drop-down");
+  pagesLink.textContent = "Info";
+
+  const pagesIcon = document.createElement("i");
+  pagesIcon.classList.add("bi", "bi-plus", "dropdown-icon");
+
+  const subMenu = document.createElement("ul");
+  subMenu.classList.add("sub-menu");
+
+  const subItems = [
+    { href: "about-us.html", text: "About Us" },
+    { href: "contact.html", text: "Contact Us" },
+    { href: "faq.html", text: "FAQ" },
+  ];
+
+  subItems.forEach((item) => {
+    const subLi = document.createElement("li");
+    const subA = document.createElement("a");
+    subA.href = item.href;
+    subA.textContent = item.text;
+    subLi.appendChild(subA);
+    subMenu.appendChild(subLi);
+  });
+
+  pagesLink.appendChild(pagesIcon);
+  pagesLi.appendChild(pagesLink);
+  pagesLi.appendChild(subMenu);
+  categoryList.appendChild(pagesLi);
+
+  // Hover events for Pages menu
+  pagesLi.addEventListener("mouseenter", function () {
+    closeAllMegaMenus();
+    pagesLi.classList.add("active");
+    subMenu.style.display = "block";
+    pagesIcon.classList.remove("bi-plus");
+    pagesIcon.classList.add("bi-dash");
+  });
+
+  pagesLi.addEventListener("mouseleave", function () {
+    pagesLi.classList.remove("active");
+    subMenu.style.display = "none";
+    pagesIcon.classList.remove("bi-dash");
+    pagesIcon.classList.add("bi-plus");
+  });
 });
+
 // header end
 
 // Intercept bootstrap data-api clicks for the product-view modal so the modal
